@@ -3,6 +3,7 @@ import docx2txt
 import nltk
 nltk.download('wordnet')
 nltk.download('omw-1.4')
+nltk.download('punkt')
 from nltk.corpus import stopwords
 from gensim.parsing.preprocessing import remove_stopwords
 import streamlit as st
