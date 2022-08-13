@@ -19,7 +19,7 @@ def convert_to_set(txt):
     lemmatizer = WordNetLemmatizer()
     listofwords = (word_tokenize(txt))
     lemmantized_list = [lemmatizer.lemmatize(i) for i in listofwords]
-    return set(lemmantized_list)
+    return (lemmantized_list)
 
 st.title("Resume Optimizer")
 
@@ -42,8 +42,8 @@ with st.expander("Upload or input resume content manually"):
         resume_txt = st.text_area('Resume Text')
 
     rcol1, rcol2 = st.columns(2)
-    rcol1.metric(label="Number of words", value=len(resume_txt))
-    rcol2.metric(label="Unique words", value=len(convert_to_set(resume_txt)))
+    rcol1.metric(label="Number of words", value=len(convert_to_set(resume_txt)))
+    rcol2.metric(label="Unique words", value=len(set(convert_to_set(resume_txt))))
 
 with st.expander("Upload or input job Description manually"):
     jd_upload = st.file_uploader("Upload Job Description")
@@ -56,10 +56,11 @@ with st.expander("Upload or input job Description manually"):
         jd_txt = st.text_area('Job Description Text', jd_text)
     else:
         jd_txt = st.text_area('Job Description Text')
-    
+
+
     jcol1, jcol2 = st.columns(2)
-    jcol1.metric(label="Number of words", value=len(jd_txt))
-    jcol2.metric(label="Unique words", value=len(convert_to_set(jd_txt)))
+    jcol1.metric(label="Number of words", value=len(convert_to_set(jd_txt)))
+    jcol2.metric(label="Unique words", value=len(set(convert_to_set(jd_txt))))
 
 
 from gensim.summarization.summarizer import summarize
@@ -83,8 +84,8 @@ else:
 
 if resume_txt != "" and jd_txt != "":
 
-    s1 = convert_to_set(resume_txt)
-    s2 = convert_to_set(jd_txt)
+    s1 = set(convert_to_set(resume_txt))
+    s2 = set(convert_to_set(jd_txt))
     s = s2.difference(s1)
     word_found = len(s2) - len(s)
 
@@ -94,9 +95,16 @@ if resume_txt != "" and jd_txt != "":
     
     st.write(s)
 
-    jd_keywords = rake.apply(jd_text2)
     st.write("Significance of words / phrases in job description using RAKE method")
-    df = pd.DataFrame(jd_keywords)
-    df.columns = ['Phrases', 'Importance']
+    try:
+        jd_keywords = rake.apply(jd_text2)
+    except:
+        jd_keywords = rake.apply(jd_txt)
 
-    st.dataframe(df[:10])
+    try:
+        df = pd.DataFrame(jd_keywords)
+        df.columns = ['Phrases', 'Importance']
+
+        st.dataframe(df[:10])
+    except:
+        pass
